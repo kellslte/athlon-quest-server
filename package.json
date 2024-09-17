@@ -1,0 +1,56 @@
+{
+  "name": "athlon-quest-server",
+  "version": "1.0.0",
+  "main": "src/main.js",
+  "type": "module",
+  "scripts": {
+    "start": "node src/main.js",
+    "start:dev": "nodemon",
+    "build": "tsc",
+    "lint": "eslint src/**/*.ts",
+    "test": "jest"
+  },
+  "keywords": [
+    "LMS",
+    "Learning Management System",
+    "Education",
+    "Athlons",
+    "ACA",
+    "Node.js",
+    "MongoDB",
+    "PostgreSQL",
+    "Redis",
+    "Real-time Chat",
+    "Assignment Submission",
+    "Leaderboard",
+    "Video Progress Tracking",
+    "Cloudinary",
+    "PDF Certificates",
+    "Student Learning",
+    "Facilitator Tools",
+    "Admin Panel"
+  ],
+  "author": "Favour Max-Oti",
+  "license": "ISC",
+  "description": "AthlonQuest is a comprehensive learning management system designed for ACA students, known as Athlons. It facilitates seamless course management, video progress tracking, real-time chat forums, assignment submissions, and leaderboard functionality. Built with Node.js, PostgreSQL, MongoDB, and Redis, AthlonLearn empowers students, facilitators, and administrators with a robust platform for modern education.",
+  "devDependencies": {
+    "@babel/core": "^7.25.2",
+    "@babel/plugin-transform-runtime": "^7.25.4",
+    "@babel/preset-env": "^7.25.4",
+    "babel-jest": "^29.7.0",
+    "jest": "^29.7.0",
+    "supertest": "^7.0.0"
+  },
+  "jest": {
+    "transform": {
+      "^.+\\.js?$": "babel-jest"
+    },
+    "testEnvironment": "node",
+    "collectCoverage": false,
+    "coverageDirectory": "./coverage",
+    "coverageReporters": ["text", "lcov"]
+  },
+  "dependencies": {
+    "@types/jest": "^29.5.13"
+  }
+}

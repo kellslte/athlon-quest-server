@@ -1,0 +1,12 @@
+{
+  "compilerOptions": {
+    "checkJs": true,      // Enables type checking for JavaScript files
+    "module": "commonjs",
+    "target": "es6",
+    "jsx": "react"
+  },
+  "include": [
+    "src/**/*",           // Adjust to include your test files
+    "test/**/*"
+  ]
+}
