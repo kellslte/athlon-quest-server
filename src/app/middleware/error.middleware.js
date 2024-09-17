@@ -32,7 +32,7 @@ class GlobalErrorHandler {
       });
     }
 
-    return res.status(err.statuscode).json({
+    return res.status(500).json({
       success: false,
       message: err.message,
       error: process.env.NODE_ENV === "development" ? err.stack : {},

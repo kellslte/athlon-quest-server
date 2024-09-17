@@ -6,8 +6,7 @@ import { appRouter } from "../routes/app.router.js";
 import expressListRoutes from "express-list-routes";
 import { createServer } from "http";
 import errorHandler from "../app/middleware/error.middleware.js";
-import Logger from "../app/middleware/logger.middleware.js";
-import Database from "../config/db.config.js";
+import Logger from "../app/middleware/loggerr.middleware.js";
 
 const app = express();
 const server = createServer(app);
@@ -31,12 +30,5 @@ app.use((err, req, res, next) => {
 
 // List routes
 expressListRoutes(app);
-
-// database connections
-const db = new Database();
-db.boot().then(({ sequelize, redisClient }) => {
-  app.set("sequelize", sequelize);
-  app.set("redisClient", redisClient);
-});
 
 export { app, server };

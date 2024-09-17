@@ -31,7 +31,7 @@ class BaseRequest {
   formatValidationErrors(errors) {
     const formattedErrors = errors.map((error) => ({
       field: error.path[0],
-      message: String(error.message).replace(/"/g, " "),
+      message: String(error.message).replace(/"/g, ""),
     }));
 
     throw new ValidationError(

@@ -7,7 +7,7 @@ class Router {
 
   registerRoutes(routes) {
     routes.forEach((route) => {
-      this.router[route.method](route.path, route.action);
+      this.router[route.method](route.path, ...route.action);
     });
   }
 
