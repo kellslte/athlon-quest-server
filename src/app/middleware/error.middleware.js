@@ -1,3 +1,4 @@
+import jwt from "jsonwebtoken";
 import {
   BadRequestError,
   ConflictError,
@@ -29,6 +30,16 @@ class GlobalErrorHandler {
         success: false,
         message: err.message,
         errors: err.errors,
+      });
+    }
+
+    if (
+      err instanceof jwt.TokenExpiredError ||
+      err instanceof jwt.JsonWebTokenError
+    ) {
+      return res.status(401).json({
+        success: false,
+        message: "Invalid or expired token",
       });
     }
 

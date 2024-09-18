@@ -1,23 +1,21 @@
-import User from "../models/user.model.js";
-import { ConflictError, NotFoundError } from "../../lib/errors.js";
-import Profile from "../models/profile.model.js";
-import Address from "../models/address.model.js";
+import { User } from "../schema/user.schema.js";
+import { ConflictError } from "../../lib/errors.js";
+import { Profile } from "../schema/profile.schema.js";
+import { Address } from "../schema/address.schema.js";
 
 class UserService {
   static async getAllUsers() {
-    return await User.findAll();
+    return await User.find().exec();
   }
 
   static async getUserById(id) {
-    return await User.findByPk(id);
+    return await User.findById(id).exec();
   }
 
   static async getUserByEmail(email) {
     return await User.findOne({
-      where: {
-        email,
-      },
-    });
+      email,
+    }).exec();
   }
 
   static async createUser(payload) {
@@ -25,52 +23,44 @@ class UserService {
 
     if (user) throw new ConflictError("This email has been taken");
 
-    const newUser = await User.create(
-      {
-        email: payload.email,
-        password: payload.password,
-        role: payload.role,
-        profile: {
-          firstName: payload.firstName,
-          lastName: payload.lastName,
-          phoneNumber: payload.phoneNumber,
-          addresses: [
-            {
-              country: payload.country,
-              street: payload.street,
-              city: payload.city,
-              state: payload.state,
-              zipCode: payload.zipCode,
-              primary: payload.primary,
-            },
-          ],
-        },
-      },
-      {
-        include: [
-          {
-            association: User.profile,
-            include: [Profile.addresses],
-          },
-        ],
-      }
-    );
+    const newUser = await User.create({
+      email: payload.email,
+      password: payload.password,
+      role: payload.role,
+    } );
+    
+    const profile = await Profile.create({
+      firstName: payload.firstName,
+      lastName: payload.lastName,
+      phoneNumber: payload.phoneNumber,
+      gender: payload.gender,
+    });
+
+    const address = await Address.create({
+      country: payload.country,
+      street: payload.street,
+      city: payload.city,
+      state: payload.state,
+      zipCode: payload.zipCode,
+      primary: payload.primary,
+    });
+
+    profile.addresses.push(address._id);
+    await profile.save();
+    newUser.profile = profile._id;
+    await newUser.save();
 
     return newUser;
   }
 
-  static async updateUser(id, userData) {
-    const user = await this.getUserById(id);
-
-    if (!user) throw new NotFoundError("The user record does not exist");
-
-    await user.update(userData);
+  static async updateUser(id, payload) {
+    const user = await User.findByIdAndUpdate(id, payload, { new: true });
 
     return user;
   }
 
   static async deleteUser(id) {
-    await User.destroy({ where: { id } });
+    await User.findByIdAndDelete(id);
   }
 }
 

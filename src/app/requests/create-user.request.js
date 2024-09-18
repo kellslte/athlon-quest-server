@@ -10,7 +10,7 @@ class CreateUserRequest extends BaseRequest {
     return {
       email: Joi.string().email().required(),
       password: Joi.string().required(),
-      role: Joi.string().valid("admin", "teacher", "student").required(),
+      role: Joi.string().valid("admin", "teacher", "student"),
       firstName: Joi.string().required(),
       lastName: Joi.string().required(),
       phoneNumber: Joi.string().required(),
@@ -20,6 +20,7 @@ class CreateUserRequest extends BaseRequest {
       state: Joi.string().required(),
       zipCode: Joi.string().required(),
       primary: Joi.boolean().required(),
+      gender: Joi.string().valid("male", "female").required(),
     };
   }
 }

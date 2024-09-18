@@ -1,6 +1,7 @@
 import AuthService from "../../app/services/auth.service.js";
 import BaseController from "../../common/base.controller.js";
-import { asyncHandler } from "../../lib/utils";
+import AppConfig from "../../config/app.config.js";
+import { ms } from "../../lib/utils.js";
 import CreateUserRequest from "../requests/create-user.request.js";
 import LoginUserRequest from "../requests/login-user.request.js";
 
@@ -9,25 +10,30 @@ class AuthController extends BaseController {
     super();
   }
 
-  register = asyncHandler(async (req, res) => {
+  register = this.asyncHandler(async (req, res) => {
     const requestValidator = new CreateUserRequest(req);
 
-    const payload = requestValidator.validate();
-    const user = await AuthService.createUserAccount(payload);
-    return this.sendResponse(res, user, "User created successfully", 201);
+    const payload = await requestValidator.validate();
+    await AuthService.createUserAccount(payload);
+    return this.sendResponse(res, null, "User created successfully", 201);
   });
 
-  login = asyncHandler(async (req, res) => {
+  login = this.asyncHandler(async (req, res) => {
     const requestValidator = new LoginUserRequest(req);
 
-    const payload = requestValidator.validate();
+    const payload = await requestValidator.validate();
     const token = await AuthService.authenticate(payload);
-    return this.sendResponse(
-      res,
-      { token },
-      "User authenticated successfully",
-      200
-    );
+
+    res.cookie("authentication", token, {
+      expiresAt: new Date(
+        Date.now() + ms(AppConfig.getOrThrow("jwt_expires_in"))
+      ),
+      httpOnly: true,
+      secure: AppConfig.getOrThrow("node_env") === "production",
+      sameSite: "strict",
+    });
+
+    return this.sendResponse(res, null, "User authenticated successfully", 200);
   });
 }
 

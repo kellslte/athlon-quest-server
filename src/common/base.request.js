@@ -10,12 +10,7 @@ class BaseRequest {
     return {};
   }
 
-  authorize() {}
-
-  validate() {
-    // call the internal authorize method
-    this.authorize();
-
+  async validate() {
     const schema = Joi.object(this.rules());
 
     const { error, value } = schema.validate(this.req.body, {
