@@ -1,9 +1,8 @@
-import { seedRolesAndPermissions, seedUsers } from "../lib/utils.js";
+import DatabaseSeeder from "../db/seeders/database.seeder.js";
 
 (async () => {
   try {
-    await seedRolesAndPermissions();
-    await seedUsers();
+    await DatabaseSeeder.run();
     console.info("Seeding completed successfully.");
     process.exit(0);
   } catch (error) {

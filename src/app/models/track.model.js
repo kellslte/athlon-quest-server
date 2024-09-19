@@ -1,6 +1,7 @@
 import { sequelize } from "../../config/db.config.js";
 import { DataTypes, Model } from "sequelize";
 import Course from "./course.model.js";
+import LearningPath from "./learning-path.model.js";
 
 class Track extends Model {}
 
@@ -31,9 +32,9 @@ Track.init(
   }
 );
 
-Track.Courses = Track.hasMany(Course, {
+Track.LearningPath = Track.hasMany(LearningPath, {
   foreignKey: "trackId",
-  as: "courses",
+  as: "learningpaths",
 });
 
 export default Track;

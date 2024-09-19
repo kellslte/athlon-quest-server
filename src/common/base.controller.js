@@ -1,11 +1,24 @@
 import RoleService from "../app/services/roles.service.js";
-import { UnauthorizedError } from "../lib/errors.js";
+import { NotFoundError, UnauthorizedError } from "../lib/errors.js";
+import AppConfig from "../config/app.config.js";
+import RedisProvider from "../app/providers/redis.provider.js";
+import FileProvider from "../app/providers/file.provider.js";
 
 class BaseController {
+  constructor() {
+    this.cache = new RedisProvider();
+    this.file = new FileProvider();
+  }
   async permitAccess(role, resource, action) {
     // fetch the data from the database and cache it
-    const permissions = await RoleService.getRoleByName(role);
-
+    let permissions;
+    const cachedPermissions = JSON.parse(await this.cache.get(role));
+    if (cachedPermissions) {
+      permissions = cachedPermissions;
+    } else {
+      permissions = await RoleService.getRoleByName(role);
+      await this.cache.set(role, JSON.stringify(permissions), 18600);
+    }
     // check if the user has the required permission to access the resource
     const permitted = permissions.permissions.some(
       (permission) =>
@@ -18,15 +31,8 @@ class BaseController {
       );
   }
 
-  async authorize(req) {
-    const publicPaths = [
-      "/auth/login",
-      "/auth/register",
-      "/api/v1/health",
-      "/",
-    ];
-
-    if (publicPaths.includes(req.path)) return;
+  async authorize(req, next) {
+    if (AppConfig.excludedRoutes().includes(req.path)) return;
 
     let action;
 
@@ -47,6 +53,15 @@ class BaseController {
         throw new Error("Unsupported HTTP method");
     }
 
+    const routes = JSON.parse(await this.cache.get("routes"));
+
+    if (!req.user && !routes.includes(req.path))
+      next(
+        new NotFoundError(
+          `The requested route ${req.originalUrl} does not exist on the server`
+        )
+      );
+
     await this.permitAccess(
       req.user.role,
       String(req.path.split("/")[1]),
@@ -57,7 +72,7 @@ class BaseController {
   asyncHandler(fn) {
     return async (req, res, next) => {
       try {
-        await this.authorize(req);
+        await this.authorize(req, next);
         return Promise.resolve(fn(req, res, next));
       } catch (error) {
         next(error);

@@ -1,3 +1,16 @@
-it("Verifies that tests can be run", () => {
-  expect("This is a test file").toBeString();
+import request from "supertest";
+import Utilities from "../src/lib/utils.js";
+
+const app = Utilities.bootstrapTestEnvironment();
+
+describe("Basic application tests", () => {
+  it("should show the server status", async () => {
+    const response = await request(app).get("/api/v1/health");
+    expect(response.status).toBe(200);
+    expect(response.body).toEqual({
+      success: true,
+      message: "Server is up and running!",
+      data: {},
+    });
+  });
 });

@@ -1,16 +1,26 @@
 import AppConfig from "./app.config.js";
 import { Sequelize } from "sequelize";
 import mongoose from "mongoose";
-import { createClient } from "redis";
 
-const sequelize = new Sequelize(AppConfig.getOrThrow("postgresql_uri"));
+let uri;
+switch (AppConfig.getOrThrow("node_env")) {
+  case "development":
+    uri = AppConfig.getOrThrow("postgresql_uri_development");
+    break;
+  case "production":
+    uri = AppConfig.getOrThrow("postgresql_uri_production");
+    break;
+  default:
+    uri = "sqlite::memory";
+}
+const sequelize = new Sequelize(uri);
 
 class PostgresConnection {
-  constructor() {
+  static connect() {
     try {
       sequelize.authenticate().then(() => {
-        console.log("Connected to PostgreSQL database");
-      } );
+        AppConfig.getOrThrow("node_env") !== "test" && console.log("Connected to PostgreSQL database");
+      });
       sequelize.sync();
     } catch (error) {
       throw error;
@@ -19,10 +29,23 @@ class PostgresConnection {
 }
 
 class MongooseConnection {
-  constructor() {
-    mongoose.connect(AppConfig.getOrThrow("mongodb_uri"));
+  static connect(environment) {
+    let uri;
+    switch (environment) {
+      case "development":
+        uri = AppConfig.getOrThrow("mongodb_uri_development");
+        break;
+      case "production":
+        uri = AppConfig.getOrThrow("mongodb_uri_production");
+        break;
+      default:
+        uri = "mongodb://localhost:27017/test_athlon_quest_collections";
+        break;
+    }
+
+    mongoose.connect(uri);
     mongoose.connection.on("connected", () => {
-      console.log("Connected to MongoDB database");
+      environment !== "test" && console.log("Connected to MongoDB database");
     });
     mongoose.connection.on("error", () => {
       console.error("Failed to connect to MongoDB database");
@@ -30,4 +53,4 @@ class MongooseConnection {
   }
 }
 
-export { PostgresConnection, sequelize, MongooseConnection };
+export { PostgresConnection, MongooseConnection, sequelize };

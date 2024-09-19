@@ -13,6 +13,18 @@ class AppConfig {
     }
     return value;
   }
+
+  static excludedRoutes() {
+    return [
+      "/auth/login",
+      "/auth/logout",
+      "/auth/register",
+      "/tracks",
+      "/tracks/:id",
+      "/health",
+      "/",
+    ];
+  }
 }
 
 export default AppConfig;

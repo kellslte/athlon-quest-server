@@ -21,7 +21,6 @@ import TrackController from "../app/controllers/track.controller";
 import RedisProvider from "../app/providers/redis.provider";
 import { MongooseConnection } from "../config/db.config";
 import AuthMiddleware from "../app/middleware/auth.middleware";
-import { permitAccess } from "../lib/utils";
 
 const container = createContainer({
   injectionMode: InjectionMode.PROXY,

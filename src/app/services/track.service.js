@@ -3,16 +3,22 @@ import Course from "../models/course.model.js";
 import Section from "../models/section.model.js";
 import Lesson from "../models/lesson.model.js";
 import { NotFoundError } from "../../lib/errors.js";
+import LearningPath from "../models/learning-path.model.js";
 
 class TrackService {
   static async getTracks() {
     return await Track.findAndCountAll({
       include: [
         {
-          model: Course,
-          as: "courses",
+          model: LearningPath,
+          as: "learningpaths",
           attributes: ["title"],
-          include: [Course.Sections, Section.Lessons, Lesson.Resources],
+          include: [
+            LearningPath.Courses,
+            Course.Sections,
+            Section.Lessons,
+            Lesson.Resources,
+          ],
         },
       ],
     });
@@ -22,10 +28,15 @@ class TrackService {
     return await Track.findByPk(id, {
       include: [
         {
-          model: Course,
-          as: "courses",
+          model: LearningPath,
+          as: "learningpaths",
           attributes: ["title"],
-          include: [Course.Sections, Section.Lessons, Lesson.Resources],
+          include: [
+            LearningPath.Courses,
+            Course.Sections,
+            Section.Lessons,
+            Lesson.Resources,
+          ],
         },
       ],
     });

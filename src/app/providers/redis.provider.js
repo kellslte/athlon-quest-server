@@ -3,12 +3,10 @@ import redis from "redis";
 
 class RedisProvider {
   constructor() {
-    const client = redis.createClient({
-      url: AppConfig.getOrThrow("redis_url"),
-    });
-
+    const client = redis.createClient();
     client.on("connect", () => {
-      console.log("Connected to Redis");
+      AppConfig.getOrThrow("node_env") !== "test" &&
+        console.log("Connected to Redis");
     });
     client.on("error", (err) => {
       console.log("Redis error: ", err);
@@ -18,7 +16,7 @@ class RedisProvider {
   }
 
   async set(key, value, expiresIn = 3600) {
-    await this.client.set(key, expiresIn, value);
+    await this.client.set(key, value, expiresIn);
   }
 
   async get(key) {
