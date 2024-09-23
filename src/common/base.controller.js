@@ -4,7 +4,7 @@ import { NotFoundError, UnauthorizedError } from "../lib/errors.js";
 import AppConfig from "../config/app.config.js";
 import RedisProvider from "../app/providers/redis.provider.js";
 import FileProvider from "../app/providers/file.provider.js";
-import CacheService from "../config/redis.config.js";
+import CacheService from "../config/cache.config.js";
 
 class BaseController {
   constructor() {

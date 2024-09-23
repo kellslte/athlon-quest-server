@@ -6,12 +6,7 @@ class BaseRequest {
     this.req = req;
   }
 
-  /**
-   * Returns a Joi schema object that defines the validation rules for
-   * the request body.
-   *
-   * @returns {Joi.ObjectSchema} The Joi schema object
-   */
+
   rules() {
     // @ts-ignore
     return {};

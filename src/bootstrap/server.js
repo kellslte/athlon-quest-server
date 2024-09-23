@@ -10,7 +10,7 @@ import cookieParser from "cookie-parser";
 import RouterConfig from "../config/routes.config.js";
 import { MongooseConnection, PostgresConnection } from "../config/db.config.js";
 import AppConfig from "../config/app.config.js";
-import CacheService from "../config/redis.config.js";
+import CacheService from "../config/cache.config.js";
 
 class Application {
   /**
@@ -86,7 +86,11 @@ class Application {
    */
   middleware() {
     this.expressInstance.use(express.json());
-    this.expressInstance.use(express.urlencoded({ extended: true }));
+    this.expressInstance.use( express.urlencoded( { extended: true } ) );
+    this.expressInstance.use(
+      "/api/v1/assets",
+      express.static(`${process.cwd()}/public`)
+    );
     this.expressInstance.use(compression());
     this.expressInstance.use(helmet());
     this.expressInstance.use(cors());

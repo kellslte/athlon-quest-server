@@ -1,5 +1,5 @@
 import expressListRoutes from "express-list-routes";
-import CacheService from "./redis.config.js";
+import CacheService from "./cache.config.js";
 
 class RouterConfig {
   static listRoutes(app) {
