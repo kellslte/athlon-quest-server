@@ -1,6 +1,14 @@
+// @ts-nocheck
 import Application from "./bootstrap/server.js";
 import AppConfig from "./config/app.config.js";
 
+/**
+ * Initializes and starts the server.
+ *
+ * @async
+ * @function
+ * @returns {undefined}
+ */
 const bootstrap = async () => {
   const app = new Application();
   app.configure();

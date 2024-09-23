@@ -1,7 +1,5 @@
 import Course from "../models/course.model.js";
 import LearningPath from "../models/learning-path.model.js";
-import Lesson from "../models/lesson.model";
-import Section from "../models/section.model.js";
 
 class LearningPathService {
   static async getTrackLearningPaths(trackId) {

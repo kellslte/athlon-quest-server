@@ -1,19 +1,8 @@
+import SequelizeConnection from "../db/index.js";
 import AppConfig from "./app.config.js";
-import { Sequelize } from "sequelize";
 import mongoose from "mongoose";
 
-let uri;
-switch (AppConfig.getOrThrow("node_env")) {
-  case "development":
-    uri = AppConfig.getOrThrow("postgresql_uri_development");
-    break;
-  case "production":
-    uri = AppConfig.getOrThrow("postgresql_uri_production");
-    break;
-  default:
-    uri = "sqlite::memory";
-}
-const sequelize = new Sequelize(uri);
+const sequelize = ( new SequelizeConnection() ).getInstance();
 
 class PostgresConnection {
   static connect() {
