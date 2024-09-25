@@ -22,7 +22,7 @@ describe( "tests for the login endpoint", () =>
         expect( response.body.message ).toBe( "Invalid credentials, please check your input and try again" );
     } );
 
-    it( "should return a 401 error if the user credentials(email) is incorrect", async () =>
+    it( "should return a 403 error if the user credentials(password) is incorrect", async () =>
     {
         await request(app).post("/api/v1/auth/register").send({
           email: "v3QGh@example.com",

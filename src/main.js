@@ -1,6 +1,9 @@
 // @ts-nocheck
 import Application from "./bootstrap/server.js";
 import AppConfig from "./config/app.config.js";
+import Utilities from "./lib/utils.js";
+
+
 
 /**
  * Initializes and starts the server.
