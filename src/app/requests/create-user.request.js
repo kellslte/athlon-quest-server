@@ -10,6 +10,7 @@ class CreateUserRequest extends BaseRequest {
     return {
       email: Joi.string().email().required(),
       password: Joi.string().required(),
+      confirm_password: Joi.string().valid(Joi.ref("password")).required(),
       role: Joi.string().valid("admin", "teacher", "student"),
       firstName: Joi.string().required(),
       lastName: Joi.string().required(),

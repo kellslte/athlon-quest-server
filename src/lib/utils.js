@@ -1,7 +1,6 @@
 import Application from "../bootstrap/server.js";
 import { readFileSync, writeFileSync } from "fs";
 import { resolve } from "path";
-import AppConfig from "../config/app.config.js";
 
 class Utilities {
   /**

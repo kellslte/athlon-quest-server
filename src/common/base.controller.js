@@ -2,7 +2,6 @@
 import RoleService from "../app/services/roles.service.js";
 import { NotFoundError, UnauthorizedError } from "../lib/errors.js";
 import AppConfig from "../config/app.config.js";
-import RedisProvider from "../app/providers/redis.provider.js";
 import FileProvider from "../app/providers/file.provider.js";
 import CacheService from "../config/cache.config.js";
 
@@ -100,12 +99,8 @@ class BaseController {
    */
   asyncHandler(fn) {
     return async (req, res, next) => {
-      try {
-        await this.authorize(req, next);
-        return Promise.resolve(fn(req, res, next));
-      } catch (error) {
-        next(error);
-      }
+      await this.authorize(req, next);
+      return Promise.resolve(fn(req, res, next)).catch(next);
     };
   }
 

@@ -27,7 +27,8 @@ class AuthService {
   }
 
   static async createUserAccount(payload) {
-    return await UserService.createUser(payload);
+    const { confirm_password, ...rest } = payload;
+    return await UserService.createUser(rest);
   }
 }
 

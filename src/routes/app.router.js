@@ -1,4 +1,4 @@
-import multer from "multer";
+// import multer from "multer";
 import Router from "../common/base.router.js";
 import AppController from "../app/controllers/app.controller.js";
 import AuthController from "../app/controllers/auth.controller.js";
@@ -15,7 +15,7 @@ const courseController = new CourseController();
 // Middleware
 const authMiddleware = new AuthMiddleware();
 // File Upload Middleware
-const upload = multer();
+// const upload = multer();
 // Application Routes
 const routes = [
   {
@@ -154,12 +154,7 @@ const routes = [
       authMiddleware.handle.bind(authMiddleware),
       courseController.createCourse.bind(courseController),
     ],
-  },
-  {
-    method: "all",
-    path: "*",
-    action: [appController.notFoundRoute.bind(appController)],
-  },
+  }
 ];
 
 // create a new application router instance

@@ -27,8 +27,8 @@ class UserService {
       email: payload.email,
       password: payload.password,
       role: payload.role,
-    } );
-    
+    });
+
     const profile = await Profile.create({
       firstName: payload.firstName,
       lastName: payload.lastName,
@@ -61,6 +61,10 @@ class UserService {
 
   static async deleteUser(id) {
     await User.findByIdAndDelete(id);
+  }
+
+  static async deleteMany() {
+    await User.deleteMany();
   }
 }
 

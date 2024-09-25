@@ -1,9 +1,12 @@
 import expressListRoutes from "express-list-routes";
 import CacheService from "./cache.config.js";
+import AppConfig from "./app.config.js";
 
 class RouterConfig {
   static listRoutes(app) {
-    return expressListRoutes(app);
+    return (
+      AppConfig.getOrThrow("node_env") !== "test" && expressListRoutes(app)
+    );
   }
 
   /**

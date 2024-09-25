@@ -30,6 +30,9 @@ class Application {
     this.expressInstance = express();
     this.cache = new CacheService().getInstance();
     this.environment = AppConfig.getOrThrow("node_env");
+
+    // configure the application
+    this.configure();
   }
 
   /**
@@ -46,13 +49,13 @@ class Application {
    */
   configure() {
     //middleware
-    this.middleware();
+    this.setupMiddleware();
     // routes
-    this.routes();
+    this.setupRoutes();
     // error handling
-    this.error();
+    this.setupErrorHandling();
     // database
-    this.database();
+    this.connectDatabase();
   }
 
   /**
@@ -67,9 +70,17 @@ class Application {
    * @memberof Application
    * @instance
    */
-  routes() {
+  setupRoutes() {
     this.expressInstance.use("/api/v1", appRouter);
-    RouterConfig.cacheRoutes(this.expressInstance);
+    if (this.environment !== "test") {
+      RouterConfig.cacheRoutes(this.expressInstance);
+    }
+    this.expressInstance.use("*", (req, res) => {
+      return res.status(404).json({
+        success: false,
+        message: `The requested url: ${req.originalUrl} does not exist on this server`,
+      });
+    });
   }
 
   /**
@@ -84,9 +95,9 @@ class Application {
    * @memberof Application
    * @instance
    */
-  middleware() {
+  setupMiddleware() {
     this.expressInstance.use(express.json());
-    this.expressInstance.use( express.urlencoded( { extended: true } ) );
+    this.expressInstance.use(express.urlencoded({ extended: true }));
     this.expressInstance.use(
       "/api/v1/assets",
       express.static(`${process.cwd()}/public`)
@@ -106,14 +117,18 @@ class Application {
    * using the `MongooseConnection.connect` and `PostgresConnection.connect`
    * methods.
    *
-   * @method database
+   * @method connectDatabase
    * @memberof Application
    * @instance
    */
-  database() {
+  connectDatabase() {
     // Connect to your database here
-    MongooseConnection.connect(this.environment);
-    PostgresConnection.connect();
+    try {
+      MongooseConnection.connect(this.environment);
+      PostgresConnection.connect();
+    } catch (error) {
+      console.error("Failed to connect to the database:", error);
+    }
   }
 
   /**
@@ -127,10 +142,8 @@ class Application {
    * @memberof Application
    * @instance
    */
-  error() {
-    this.expressInstance.use((err, req, res, next) => {
-      errorHandler.handle(err, req, res, next);
-    });
+  setupErrorHandling() {
+    this.expressInstance.use(errorHandler.handle);
   }
 
   /**
@@ -145,15 +158,26 @@ class Application {
    * @instance
    */
   start(port) {
-    const server = createServer(this.expressInstance);
-    server.listen(port, () => {
-      console.log(`Server running on port ${port}`);
-    });
+    try {
+      const server = createServer(this.expressInstance);
+      server.listen(port, () => {
+        console.log(`Server running on port ${port}`);
+      });
+
+      // Graceful shutdown handling
+      process.on("SIGINT", () => {
+        console.log("Server shutting down...");
+        server.close(() => {
+          console.log("Server closed");
+          process.exit(0);
+        });
+      });
+    } catch (error) {
+      console.error.bind(console, error);
+      process.exit(1);
+    }
   }
-  catch(error) {
-    console.error.bind(console, error);
-    process.exit(1);
-  }
+
 }
 
 export default Application;
