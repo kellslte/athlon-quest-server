@@ -1,48 +1,46 @@
-name: Run Pre-Deployment Tests
+# .github/workflows/nodejs-mongodb.yml
+name: Pre-Deployment Tests
 
 on:
   push:
     branches:
-     - staging
+      - main
+  pull_request:
+    branches:
+      - main
 
 jobs:
-  test:
+  build:
     runs-on: ubuntu-latest
-    strategy:
-      matrix:
-        mongodb-version: ['5.0.9']
+
+    services:
+      mongodb:
+        image: mongo:latest
+        ports:
+          - 27017:27017
+        options: >-
+          --health-cmd "mongo --eval 'db.runCommand({ ping: 1 })'" 
+          --health-interval 10s 
+          --health-timeout 5s 
+          --health-retries 5
 
     steps:
-    - name: Git checkout
-      uses: actions/checkout@v4
+      # Checkout the repository
+      - name: Checkout repository
+        uses: actions/checkout@v3
 
-    - name: Setup MongoDB
-      uses: mongodb-actions/setup-mongodb@v2
-      with:
-        mongodb-version: ${{ matrix.mongodb-version }}
+      # Set up Node.js
+      - name: Set up Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: '21' # or specify your node version
 
-    - name: Setup Redis
-      uses: chenjuneking/redis-setup-action@v1
-      with:
-        version: 6
-        hostPort: 5034
-        containerPort: 6379
+      # Install dependencies
+      - name: Install dependencies
+        run: npm install
 
-    - name: Start MongoDB
-      uses: supercharge/mongodb-github-action@1.11.0
-      with:
-        mongodb-version: ${{ matrix.mongodb-version }}
-    
-    - name: Setup Node Js environment
-      uses: actions/setup-node@v4
-      with:
-        node-version: "21"
-      
-    - name: Install dependencies
-      run: npm install
-
-      # Run the tests
-    - name: Run tests
-      run: npm test
-      env:
-       NODE_ENV: test
+      # Run tests
+      - name: Run tests
+        run: npm run test
+        env:
+          NODE_ENV: test
